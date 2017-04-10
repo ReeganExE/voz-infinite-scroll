@@ -93,8 +93,8 @@ GM_addStyle(".hide {display: none} .show{display: block} ");
         } else {
             title = `${title} Page ${currentPage}`;
         }
-        document.title = title;
         history.pushState({}, title, path);
+        document.title = title;
     }
 
 
