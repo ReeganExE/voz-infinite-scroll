@@ -1,3 +1,6 @@
+## Updated 2017: Merged to origin
+This project is merged to https://github.com/green-leaves/infinite-voz. Check it out ![](https://vozforums.com/images/smilies/Off/byebye.gif)
+
 # voz-infinite-scroll
 A user script is used for 😋 😜 😝 😛 🤑 🤗 vozforums.com which enables Infinite scrolling
 
