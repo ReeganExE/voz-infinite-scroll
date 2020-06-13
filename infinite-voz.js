@@ -1,31 +1,105 @@
 // infinite-voz.js
 // ==UserScript==
-// @name         Infinite Scroll VOZ
-// @namespace    http://vozforums.com/
-// @version      0.2
+// @name         Infinite Scroll VOZ V2
+// @namespace    https://voz.vn
+// @version      2.0
 // @description  try to take over the world!
-// @author       You
+// @author       ReeganExE
 // @match        https://voz.vn/t/*
 // @grant        GM_addStyle
 // ==/UserScript==
-GM_addStyle('.hide {display: none} .show{display: block} ')
+GM_addStyle(`
+.hide {display: none} .show{display: block}
+.fixed-page {
+    position: fixed;
+    left: 13px;
+    bottom: 20px;
+}
+
+.reply-form.hide .message-cell--main {
+  display: none;
+}
+.reply-form {
+    position: fixed;
+    bottom: 20px;
+    z-index: 100;
+    width: 0;
+    border: solid 1px #616161;
+    box-shadow: 1px 1px 10px 4px #585858;
+    border-radius: 2px;
+    -webkit-transition: width .2s ease-in-out;
+    -moz-transition: width .2s ease-in-out;
+    -o-transition: width .2s ease-in-out;
+    transition: width .2s ease-in-out;
+}
+
+.reply-button {
+  position: fixed;
+  bottom: 38px;
+  z-index: 100;
+  right: 140px;
+}
+`)
 ;(function () {
+  const PAGE_WRAPPER_SELECTOR = '.pageNavWrapper.pageNavWrapper--mixed'
+  const POST_BODY_SELECTOR = '.lbContainer .block-body'
   const parser = new DOMParser()
-  const threads = document.getElementById('threadslist')
-  const posts = document.getElementById('posts')
+  const threads = document.getElementById('posts')
+  const posts = document.querySelector(POST_BODY_SELECTOR)
   let currentPage = +getCurrentPage()
   let lastPage = +getLastPage()
   let isLoading = false
   const PAGE_REG = /Page \d+/
   const BUFFER_HEIGHT = 300 // Magic number, to load next page before reach the end.
   const loadingSpinHTML =
-    '<div class="" style="width: 100px; margin: 0 auto;">Loading... <img src="data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA=="/></div>'
+    '<div class="" style="width: 160px;margin: 0 auto;padding: 20px;text-align: center;color: white;">Loading... <img src="data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA=="/></div>'
   const loadingSpin = document.createElement('div')
   loadingSpin.innerHTML = loadingSpinHTML
   loadingSpin.className = 'hide'
 
+  const pageNavWrappers = document.querySelectorAll(PAGE_WRAPPER_SELECTOR)
+  pageNavWrappers[pageNavWrappers.length - 1].classList.add('fixed-page')
+
+  // Reply form
+  const repyForm = document.querySelector('form.js-quickReply')
+  if (repyForm) {
+    repyForm.classList.add('reply-form')
+    repyForm.classList.add('hide')
+
+    // Reply button
+    const replyButton = htmlToElement(`
+      <button type="button" class="button--primary button button--icon button--icon--reply reply-button">
+        <span class="button-text">
+          Reply
+        </span>
+      </button>
+    `)
+
+    let show = false
+
+    replyButton.addEventListener('click', () => {
+      const post = document.querySelector('.message.message--post.js-post.js-inlineModContainer')
+      show = !show
+      if (show) {
+        repyForm.classList.remove('hide')
+        repyForm.style.width = `${post.clientWidth}px`
+      } else {
+        repyForm.addEventListener(
+          'transitionend',
+          () => {
+            repyForm.classList.add('hide')
+          },
+          { once: true }
+        )
+        repyForm.style.width = 0
+      }
+    })
+    document.body.appendChild(replyButton)
+  }
+
   //= =========================================================================
   // Load Thread
+  // UNSUPPORTED AT THIS MOMENT
   //= =========================================================================
   if (threads) {
     const boxId = getParameterByName('f', window.location.href)
@@ -61,7 +135,7 @@ GM_addStyle('.hide {display: none} .show{display: block} ')
   } else if (posts) {
     const postsOffsetTop = getCoords(posts).top
 
-    const threadId = getParameterByName('t', window.location.href)
+    const [, threadId] = location.href.match(/https:\/\/voz.vn\/t.*\.(\d+)\/?/)
     insertAfter(posts, loadingSpin)
     window.addEventListener('scroll', function () {
       if (
@@ -73,11 +147,9 @@ GM_addStyle('.hide {display: none} .show{display: block} ')
           isLoading = true
           loadThreadPage(threadId, ++currentPage, function (loadedDoc) {
             pushState(currentPage)
-
-            posts.innerHTML += `<div>Page${currentPage}</div>`
-            posts.innerHTML += loadedDoc.getElementById('posts').innerHTML
+            posts.innerHTML += loadedDoc.querySelector(POST_BODY_SELECTOR).innerHTML
+            updatePageNavigator(loadedDoc)
             lastPage = getLastPage(loadedDoc)
-            updatePageNavigator(loadedDoc.querySelector('div.pagenav').innerHTML)
             isLoading = false
             loadingSpin.className = 'hide'
           })
@@ -87,21 +159,6 @@ GM_addStyle('.hide {display: none} .show{display: block} ')
   }
 
   function pushState(currentPage) {
-    const query = location.search
-      .slice(1)
-      .split('&')
-      .reduce((o, v) => {
-        const [key, val] = v.split('=')
-        o[key] = val
-        return o
-      }, {})
-    const { origin, pathname } = location
-
-    query.page = currentPage
-    const search = Object.keys(query)
-      .map((k) => `${k}=${query[k]}`)
-      .join('&')
-    const path = `${origin}${pathname}?${search}`
     let { title } = document
 
     if (PAGE_REG.test(title)) {
@@ -109,7 +166,13 @@ GM_addStyle('.hide {display: none} .show{display: block} ')
     } else {
       title = `${title} Page ${currentPage}`
     }
-    history.pushState({}, title, path)
+
+    let [root] = location.href.split('/page-')
+    if (!root.endsWith('/')) {
+      root += '/'
+    }
+    root += `page-${currentPage}`
+    history.pushState({}, title, root + location.search)
     document.title = title
   }
 
@@ -118,13 +181,12 @@ GM_addStyle('.hide {display: none} .show{display: block} ')
   }
 
   function getCurrentPage() {
-    return document
-      .querySelector('div.pagenav tbody')
-      .querySelectorAll('tr:first-child td.alt2 strong')[0].innerHTML
+    return document.querySelector('.pageNav-page.pageNav-page--current a').textContent.trim()
   }
 
-  function updatePageNavigator(newHtmlNav) {
-    const pageNavs = document.querySelectorAll('div.pagenav')
+  function updatePageNavigator(loadedDoc) {
+    const pageNavs = document.querySelectorAll(PAGE_WRAPPER_SELECTOR)
+    const newHtmlNav = loadedDoc.querySelector(PAGE_WRAPPER_SELECTOR).innerHTML
     for (let i = 0; i < pageNavs.length; i++) {
       pageNavs[i].innerHTML = newHtmlNav
     }
@@ -132,11 +194,7 @@ GM_addStyle('.hide {display: none} .show{display: block} ')
 
   function getLastPage(doc) {
     if (!doc) doc = document
-    const pageInfo = doc
-      .querySelector('div.pagenav tbody')
-      .querySelector('tr:first-child td.vbmenu_control').innerText
-    const pageInfoWords = pageInfo.split(' ')
-    return pageInfoWords[pageInfoWords.length - 1]
+    return document.querySelector('.pageNav-main li:last-child').innerText
   }
 
   function getParameterByName(name, url) {
@@ -182,11 +240,9 @@ GM_addStyle('.hide {display: none} .show{display: block} ')
   }
 
   function loadThreadPage(threadId, pageNo, callback) {
-    ajax('GET', `https://vozforums.com/showthread.php?t=${threadId}&page=${pageNo}`, loadSuccess)
-
-    function loadSuccess(xhr) {
+    ajax('GET', `https://voz.vn/t/thread.${threadId}/page-${pageNo}`, (xhr) =>
       callback(parser.parseFromString(xhr.responseText, 'text/html'))
-    }
+    )
   }
 
   function ajax(method, url, callback) {
@@ -208,5 +264,17 @@ GM_addStyle('.hide {display: none} .show{display: block} ')
 
   function insertAfter(referenceNode, newNode) {
     referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling)
+  }
+
+  /**
+   * @param {String} HTML representing a single element
+   * @return {Element}
+   * @author https://stackoverflow.com/a/35385518/1099314
+   */
+  function htmlToElement(html) {
+    const template = document.createElement('template')
+    html = html.trim() // Never return a text node of whitespace as the result
+    template.innerHTML = html
+    return template.content.firstChild
   }
 })()
