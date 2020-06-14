@@ -21,23 +21,22 @@ GM_addStyle(`
 }
 .reply-form {
     position: fixed;
-    bottom: 20px;
+    bottom: -800px;
     z-index: 100;
-    width: 0;
     border: solid 1px #616161;
     box-shadow: 1px 1px 10px 4px #585858;
     border-radius: 2px;
-    -webkit-transition: width .2s ease-in-out;
-    -moz-transition: width .2s ease-in-out;
-    -o-transition: width .2s ease-in-out;
-    transition: width .2s ease-in-out;
+    -webkit-transition: bottom .2s ease-in-out;
+    -moz-transition: bottom .2s ease-in-out;
+    -o-transition: bottom .2s ease-in-out;
+    transition: bottom .2s ease-in-out;
 }
 
 .reply-button {
   position: fixed;
-  bottom: 38px;
+  bottom: 30px;
   z-index: 100;
-  right: 140px;
+  right: 70px;
 }
 `)
 ;(function () {
@@ -62,38 +61,42 @@ GM_addStyle(`
     pageNavWrappers[pageNavWrappers.length - 1].classList.add('fixed-page')
   }
 
+  function hideReplyForm() {
+    repyForm.style.bottom = '-800px'
+  }
+
   // Reply form
   const repyForm = document.querySelector('form.js-quickReply')
+
   if (repyForm) {
     repyForm.classList.add('reply-form')
-    repyForm.classList.add('hide')
 
     // Reply button
     const replyButton = htmlToElement(`
       <button type="button" class="button--primary button button--icon button--icon--reply reply-button">
         <span class="button-text">
-          Reply
+          Ẩn/Hiện Reply
         </span>
       </button>
     `)
 
+    const post = document.querySelector('.message.message--post.js-post.js-inlineModContainer')
+    repyForm.style.width = `${post.clientWidth}px`
+
     let show = false
 
+    repyForm.addEventListener('keydown', (e) => {
+      if (e.keyCode === 27) {
+        hideReplyForm()
+        show = false
+      }
+    })
     replyButton.addEventListener('click', () => {
-      const post = document.querySelector('.message.message--post.js-post.js-inlineModContainer')
       show = !show
       if (show) {
-        repyForm.classList.remove('hide')
-        repyForm.style.width = `${post.clientWidth}px`
+        repyForm.style.bottom = '40px'
       } else {
-        repyForm.addEventListener(
-          'transitionend',
-          () => {
-            repyForm.classList.add('hide')
-          },
-          { once: true }
-        )
-        repyForm.style.width = 0
+        hideReplyForm()
       }
     })
     document.body.appendChild(replyButton)

@@ -7,7 +7,7 @@ Working in progress:
  - [x] Infinity scroll
  - [x] Update URL according to page change
  - [x] Docked page navigation
- - [x] Docked Reply form (90%, the animation is still lag)
+ - [x] Docked Reply form with toggle
  - [x] Handle quote events
 
 Previous version: [V1](https://github.com/ReeganExE/voz-infinite-scroll/tree/v1)
