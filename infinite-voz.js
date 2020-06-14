@@ -2,9 +2,9 @@
 // ==UserScript==
 // @name         Infinite Scroll VOZ V2
 // @namespace    https://voz.vn
-// @version      2.1
+// @version      2.2
 // @description  try to take over the world!
-// @author       ReeganExE
+// @author       Ninh Pham (ReeganExE), Nguyen Duy Tiep (green-leaves)
 // @match        https://voz.vn/t/*
 // @grant        GM_addStyle
 // ==/UserScript==
@@ -58,7 +58,9 @@ GM_addStyle(`
   loadingSpin.className = 'hide'
 
   const pageNavWrappers = document.querySelectorAll(PAGE_WRAPPER_SELECTOR)
-  pageNavWrappers[pageNavWrappers.length - 1].classList.add('fixed-page')
+  if (pageNavWrappers.length) {
+    pageNavWrappers[pageNavWrappers.length - 1].classList.add('fixed-page')
+  }
 
   // Reply form
   const repyForm = document.querySelector('form.js-quickReply')
@@ -184,7 +186,8 @@ GM_addStyle(`
   }
 
   function getCurrentPage() {
-    return document.querySelector('.pageNav-page.pageNav-page--current a').textContent.trim()
+    const page = document.querySelector('.pageNav-page.pageNav-page--current a')
+    return page ? page.textContent.trim() : 1
   }
 
   function updatePageNavigator(loadedDoc) {
@@ -197,7 +200,8 @@ GM_addStyle(`
 
   function getLastPage(doc) {
     if (!doc) doc = document
-    return document.querySelector('.pageNav-main li:last-child').innerText
+    const page = doc.querySelector('.pageNav-main li:last-child')
+    return page ? page.innerText : 1
   }
 
   function getParameterByName(name, url) {
