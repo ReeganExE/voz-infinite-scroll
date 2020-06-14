@@ -1,6 +1,8 @@
 ## Updated 2020: Next VOZ
 New version for https://voz.vn
 
+Check it out: https://greasyfork.org/en/scripts/38414-infinite-scroll-voz-v2
+
 Working in progress:
  - [x] Infinity scroll
  - [x] Update URL according to page change
