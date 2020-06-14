@@ -2,7 +2,7 @@
 // ==UserScript==
 // @name         Infinite Scroll VOZ V2
 // @namespace    https://voz.vn
-// @version      2.0
+// @version      2.1
 // @description  try to take over the world!
 // @author       ReeganExE
 // @match        https://voz.vn/t/*
@@ -152,6 +152,9 @@ GM_addStyle(`
             lastPage = getLastPage(loadedDoc)
             isLoading = false
             loadingSpin.className = 'hide'
+
+            // Reintialize the events handler for quotes, reply, report, reaction
+            XF.activate(posts)
           })
         }
       }

@@ -4,7 +4,8 @@
     "browser": true
   },
   "globals": {
-    "GM_addStyle": true
+    "GM_addStyle": true,
+    "XF": true
   },
   "rules": {
     "semi": ["error", "never"],
