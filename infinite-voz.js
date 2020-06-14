@@ -3,7 +3,7 @@
 // @name         Infinite Scroll VOZ V2
 // @namespace    https://voz.vn
 // @version      2.2
-// @description  try to take over the world!
+// @description  Lướt voz.vn nhanh gọn như lướt facebook
 // @author       Ninh Pham (ReeganExE), Nguyen Duy Tiep (green-leaves)
 // @match        https://voz.vn/t/*
 // @grant        GM_addStyle
