@@ -2,7 +2,7 @@
 // ==UserScript==
 // @name         Infinite Scroll VOZ V2
 // @namespace    https://voz.vn
-// @version      2.2
+// @version      2.3
 // @description  Lướt voz.vn nhanh gọn như lướt facebook
 // @author       Ninh Pham (ReeganExE), Nguyen Duy Tiep (green-leaves)
 // @match        https://voz.vn/t/*
@@ -102,11 +102,12 @@ GM_addStyle(`
     document.body.appendChild(replyButton)
   }
 
+  const notThreadView = !location.pathname.startsWith('/t/')
   //= =========================================================================
   // Load Thread
   // UNSUPPORTED AT THIS MOMENT
   //= =========================================================================
-  if (threads) {
+  if (notThreadView) {
     const boxId = getParameterByName('f', window.location.href)
     const innerThreadList = document.getElementById(`threadbits_forum_${boxId}`)
     const threadListOffsetTop = getCoords(threads).top
