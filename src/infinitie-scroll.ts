@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name         Infinite Scroll VOZ V2
+// @name         Infinite Scroll VOZ
 // @namespace    https://voz.vn
 // @version      $RELEASE_VERSION
 // @description  Infinite Scroll VOZ - Lướt voz.vn nhanh gọn như lướt facebook. https://github.com/ReeganExE/voz-infinite-scroll
