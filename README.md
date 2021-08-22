@@ -1,3 +1,9 @@
+## Updated 2021: Migrate to TypeScript & Automatic Release
+
+ - [x] Migrate from JS To TypeScript
+ - [x] Add automatic release (previously webhook)
+ - [x] Auto show Reply box when you click Reply to a thread
+
 ## Updated 2020: Next VOZ
 New version for https://voz.vn
 
@@ -10,6 +16,7 @@ Working in progress:
  - [x] Docked Reply form with toggle
  - [x] Handle quote events
 
+----
 Previous version: [V1](https://github.com/ReeganExE/voz-infinite-scroll/tree/v1)
 
 ~~This project is merged to https://github.com/green-leaves/infinite-voz~~

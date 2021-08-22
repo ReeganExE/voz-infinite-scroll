@@ -1,0 +1,20 @@
+name: 'Release'
+on:
+  push:
+    tags:
+      - v*
+jobs:
+  UploadExtension:
+    name: Release
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - name: install node v12
+        uses: actions/setup-node@v1
+        with:
+          node-version: 12
+      - run: npm run build
+      - uses: ncipollo/release-action@v1
+        with:
+          artifacts: 'voz-infinitie-scroll.js'
+          token: ${{ secrets.GITHUB_TOKEN }}

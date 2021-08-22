@@ -1,5 +1,11 @@
 {
-  "extends": ["airbnb-base", "prettier"],
+  "parser": "@typescript-eslint/parser",
+  "extends": [
+    "airbnb-base",
+    "plugin:@typescript-eslint/recommended",
+    "prettier",
+    "prettier/@typescript-eslint"
+  ],
   "env": {
     "browser": true
   },
@@ -7,27 +13,61 @@
     "GM_addStyle": true,
     "XF": true
   },
+  "plugins": ["prettier", "@typescript-eslint"],
   "rules": {
-    "semi": ["error", "never"],
-    "import/prefer-default-export": "off",
-    "no-plusplus": "off",
-    "func-names": "off",
-    "no-param-reassign": "off",
-    "no-restricted-globals": "off",
-    "implicit-arrow-linebreak": "off",
-    "consistent-return": "off",
-    "no-use-before-define": [
+    "prettier/prettier": "error",
+    "import/extensions": [
       "error",
+      "ignorePackages",
       {
-        "functions": false,
-        "classes": false,
-        "variables": false
+        "js": "never",
+        "ts": "never"
       }
     ],
-    "comma-dangle": ["error", "never"],
-    "no-console": "off",
+    "no-use-before-define": "off",
+    "@typescript-eslint/no-use-before-define": [
+      "error",
+      { "typedefs": false, "functions": false, "classes": false, "variables": false }
+    ],
+    "import/order": ["error", { "newlines-between": "always-and-inside-groups" }],
+    "space-before-function-paren": "off",
+    "no-console": ["warn", { "allow": ["warn", "error"] }],
+    "linebreak-style": "off",
+    "func-names": "off",
+    "global-require": "off",
+    "no-unused-expressions": "off",
+    "no-multi-assign": "off",
+    "arrow-parens": "off",
+    "no-param-reassign": "off",
+    "consistent-return": "off",
     "no-shadow": "off",
-    "prettier/prettier": "error"
+    "comma-dangle": ["error", "only-multiline"],
+    "no-unused-vars": [
+      "error",
+      {
+        "argsIgnorePattern": "next"
+      }
+    ],
+    "object-curly-newline": [
+      "error",
+      {
+        "consistent": true
+      }
+    ],
+    "max-len": [
+      "error",
+      {
+        "code": 150
+      }
+    ],
+    "no-confusing-arrow": "off"
   },
-  "plugins": ["prettier"]
+  "settings": {
+    "import/resolver": {
+      "node": {
+        "extensions": [".js", ".ts", ".json"]
+      }
+    },
+    "import/extensions": [".js", ".ts", ".mjs"]
+  }
 }

@@ -1,2 +1,2 @@
-serviceWorker*
-public/*
+dist
+node_modules

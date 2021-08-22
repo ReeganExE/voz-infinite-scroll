@@ -1,0 +1,14 @@
+{
+  "rules": {
+    "prefer-destructuring": "off",
+    "no-console": "off",
+    "no-plusplus": "off",
+    "no-inner-declarations": "off",
+    "no-restricted-globals": "off",
+    "no-underscore-dangle": "off",
+    "camelcase": "off",
+    "no-confusing-arrow": "off",
+    "@typescript-eslint/no-unused-vars": "error",
+    "no-unused-vars": "off"
+  }
+}
