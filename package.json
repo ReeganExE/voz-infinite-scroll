@@ -4,7 +4,7 @@
   "description": "voz-infinite-scroll",
   "main": "infinite-voz.js",
   "scripts": {
-    "build": "./build.sh",
+    "build": "npm ci && ./build.sh",
     "lint": "eslint --ext ts src"
   },
   "repository": {

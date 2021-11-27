@@ -1,13 +1,3 @@
-// ==UserScript==
-// @name         Infinite Scroll VOZ
-// @namespace    https://voz.vn
-// @version      $RELEASE_VERSION
-// @description  Infinite Scroll VOZ - Lướt voz.vn nhanh gọn như lướt facebook. https://github.com/ReeganExE/voz-infinite-scroll
-// @author       Ninh Pham (ReeganExE), Nguyen Duy Tiep (green-leaves)
-// @match        https://voz.vn/t/*
-// @grant        GM_addStyle
-// ==/UserScript==
-
 GM_addStyle(`
 .hide {display: none} .show{display: block}
 .fixed-page {
