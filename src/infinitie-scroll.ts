@@ -43,44 +43,44 @@ GM_addStyle(`
   z-index: 100;
   right: 70px;
 }
-`);
-(function () {
-  const PAGE_WRAPPER_SELECTOR = '.pageNav-main';
-  const POST_BODY_SELECTOR = '.js-replyNewMessageContainer';
-  const parser = new DOMParser();
-  const posts: HTMLDivElement = document.querySelector(POST_BODY_SELECTOR);
-  let currentPage = +getCurrentPage();
-  let lastPage: number = +getLastPage();
-  let isLoading = false;
-  let threadId = '';
-  const PAGE_REG = /Page \d+/;
-  const BUFFER_HEIGHT = 400; // Magic number, to load next page before reach the end.
+`)
+;(function () {
+  const PAGE_WRAPPER_SELECTOR = '.pageNav-main'
+  const POST_BODY_SELECTOR = '.js-replyNewMessageContainer'
+  const parser = new DOMParser()
+  const posts: HTMLDivElement = document.querySelector(POST_BODY_SELECTOR)
+  let currentPage = +getCurrentPage()
+  let lastPage: number = +getLastPage()
+  let isLoading = false
+  let threadId = ''
+  const PAGE_REG = /Page \d+/
+  const BUFFER_HEIGHT = 400 // Magic number, to load next page before reach the end.
   const loadingSpinHTML =
     // eslint-disable-next-line max-len
-    '<div class="" style="width: 160px;margin: 0 auto;padding: 20px;text-align: center;color: white;">Loading... <img src="data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA=="/></div>';
-  const loadingSpin = document.createElement('div');
-  loadingSpin.innerHTML = loadingSpinHTML;
-  loadingSpin.className = 'hide';
+    '<div class="" style="width: 160px;margin: 0 auto;padding: 20px;text-align: center;color: white;">Loading... <img src="data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA=="/></div>'
+  const loadingSpin = document.createElement('div')
+  loadingSpin.innerHTML = loadingSpinHTML
+  loadingSpin.className = 'hide'
 
   main({
     getThreadId() {
-      return location.pathname.match(/\/t.*\.(\d+)\/?/)[1];
-    },
-  });
+      return location.pathname.match(/\/t\/.*\.(\d+)\/?/)[1]
+    }
+  })
 
   function main({ getThreadId }: InitialOptions) {
-    const pageNavWrappers = document.querySelectorAll(PAGE_WRAPPER_SELECTOR);
+    const pageNavWrappers = document.querySelectorAll(PAGE_WRAPPER_SELECTOR)
     if (pageNavWrappers.length) {
-      pageNavWrappers[pageNavWrappers.length - 1].classList.add('fixed-page');
+      pageNavWrappers[pageNavWrappers.length - 1].classList.add('fixed-page')
     }
 
     // Reply form
-    handleReplyForm();
+    handleReplyForm()
     function handleReplyForm() {
-      const repyForm: HTMLFormElement = document.querySelector('form.js-quickReply');
+      const repyForm: HTMLFormElement = document.querySelector('form.js-quickReply')
 
       if (repyForm) {
-        repyForm.classList.add('reply-form');
+        repyForm.classList.add('reply-form')
 
         // Reply button
         const replyButton = htmlToElement(`
@@ -89,48 +89,48 @@ GM_addStyle(`
           Ẩn/Hiện Reply
         </span>
       </button>
-    `);
+    `)
 
-        const post = document.querySelector('.message.message--post.js-post.js-inlineModContainer');
-        repyForm.style.width = `${post.clientWidth}px`;
+        const post = document.querySelector('.message.message--post.js-post.js-inlineModContainer')
+        repyForm.style.width = `${post.clientWidth}px`
 
-        let show = false;
+        let show = false
 
         function hideReplyForm() {
-          show = false;
-          repyForm.style.bottom = '-800px';
+          show = false
+          repyForm.style.bottom = '-800px'
         }
 
         function showReplyForm() {
-          show = true;
-          repyForm.style.bottom = '40px';
+          show = true
+          repyForm.style.bottom = '40px'
         }
 
         repyForm.addEventListener('keydown', (e) => {
           if (e.keyCode === 27) {
-            hideReplyForm();
-            show = false;
+            hideReplyForm()
+            show = false
           }
-        });
+        })
         replyButton.addEventListener('click', () => {
-          show = !show;
+          show = !show
           if (show) {
-            showReplyForm();
+            showReplyForm()
           } else {
-            hideReplyForm();
+            hideReplyForm()
           }
-        });
-        document.body.appendChild(replyButton);
+        })
+        document.body.appendChild(replyButton)
 
-        jQuery(document).on('xf-click:before-click.XFQuoteClick', showReplyForm);
+        jQuery(document).on('xf-click:before-click.XFQuoteClick', showReplyForm)
       }
     }
 
     if (posts) {
-      const postsOffsetTop = getCoords(posts).top;
+      const postsOffsetTop = getCoords(posts).top
 
-      threadId = getThreadId();
-      insertAfter(posts, loadingSpin);
+      threadId = getThreadId()
+      insertAfter(posts, loadingSpin)
 
       window.addEventListener('scroll', () => {
         if (
@@ -138,83 +138,83 @@ GM_addStyle(`
           posts.offsetHeight + postsOffsetTop
         ) {
           if (isLoadable()) {
-            loadingSpin.className = 'show';
-            isLoading = true;
+            loadingSpin.className = 'show'
+            isLoading = true
             loadThreadPage(threadId, ++currentPage, (loadedDoc) => {
-              pushState(currentPage);
-              posts.innerHTML += loadedDoc.querySelector(POST_BODY_SELECTOR).innerHTML;
-              updatePageNavigator(loadedDoc);
-              lastPage = getLastPage(loadedDoc);
-              isLoading = false;
-              loadingSpin.className = 'hide';
+              pushState(currentPage)
+              posts.innerHTML += loadedDoc.querySelector(POST_BODY_SELECTOR).innerHTML
+              updatePageNavigator(loadedDoc)
+              lastPage = getLastPage(loadedDoc)
+              isLoading = false
+              loadingSpin.className = 'hide'
 
               // Reintialize the events handler for quotes, reply, report, reaction
-              XF.activate(posts);
-            });
+              XF.activate(posts)
+            })
           }
         }
-      });
+      })
     }
   }
 
   function pushState(currentPage) {
-    let { title } = document;
+    let { title } = document
 
     if (PAGE_REG.test(title)) {
-      title = title.replace(PAGE_REG, `Page ${currentPage}`);
+      title = title.replace(PAGE_REG, `Page ${currentPage}`)
     } else {
-      title = `${title} Page ${currentPage}`;
+      title = `${title} Page ${currentPage}`
     }
 
-    let [root] = location.href.split('/page-');
+    let [root] = location.href.split('/page-')
     if (!root.endsWith('/')) {
-      root += '/';
+      root += '/'
     }
-    root += `page-${currentPage}`;
-    history.pushState({}, title, root + location.search);
-    document.title = title;
+    root += `page-${currentPage}`
+    history.pushState({}, title, root + location.search)
+    document.title = title
   }
 
   function isLoadable() {
-    return !isLoading && currentPage < lastPage;
+    return !isLoading && currentPage < lastPage
   }
 
   function getCurrentPage(): number {
-    const page = document.querySelector('.pageNav-main .pageNav-page--current');
-    return page ? Number(page.textContent.trim()) : 1;
+    const page = document.querySelector('.pageNav-main .pageNav-page--current')
+    return page ? Number(page.textContent.trim()) : 1
   }
 
   function getLastPage(doc?: Document): number {
-    if (!doc) doc = document;
-    const page = doc.querySelector('.pageNav-page:last-child a');
-    return page ? Number(page.textContent.trim()) : 1;
+    if (!doc) doc = document
+    const page = doc.querySelector('.pageNav-page:last-child a')
+    return page ? Number(page.textContent.trim()) : 1
   }
 
   function updatePageNavigator(loadedDoc: Document) {
-    const pageNavs = document.querySelectorAll(PAGE_WRAPPER_SELECTOR);
-    const newHtmlNav = loadedDoc.querySelector(PAGE_WRAPPER_SELECTOR).innerHTML;
+    const pageNavs = document.querySelectorAll(PAGE_WRAPPER_SELECTOR)
+    const newHtmlNav = loadedDoc.querySelector(PAGE_WRAPPER_SELECTOR).innerHTML
     for (let i = 0; i < pageNavs.length; i++) {
-      pageNavs[i].innerHTML = newHtmlNav;
+      pageNavs[i].innerHTML = newHtmlNav
     }
   }
 
   function getCoords(elem: Element) {
     // crossbrowser version
-    const box = elem.getBoundingClientRect();
+    const box = elem.getBoundingClientRect()
 
-    const { body } = document;
-    const docEl = document.documentElement;
+    const { body } = document
+    const docEl = document.documentElement
 
-    const scrollTop = window.pageYOffset || docEl.scrollTop || body.scrollTop;
-    const scrollLeft = window.pageXOffset || docEl.scrollLeft || body.scrollLeft;
+    const scrollTop = window.pageYOffset || docEl.scrollTop || body.scrollTop
+    const scrollLeft = window.pageXOffset || docEl.scrollLeft || body.scrollLeft
 
-    const clientTop = docEl.clientTop || body.clientTop || 0;
-    const clientLeft = docEl.clientLeft || body.clientLeft || 0;
+    const clientTop = docEl.clientTop || body.clientTop || 0
+    const clientLeft = docEl.clientLeft || body.clientLeft || 0
 
-    const top = box.top + scrollTop - clientTop;
-    const left = box.left + scrollLeft - clientLeft;
+    const top = box.top + scrollTop - clientTop
+    const left = box.left + scrollLeft - clientLeft
 
-    return { top: Math.round(top), left: Math.round(left) };
+    return { top: Math.round(top), left: Math.round(left) }
   }
 
   function loadThreadPage(
@@ -222,30 +222,30 @@ GM_addStyle(`
     pageNo: number,
     callback: (s: Document) => void
   ) {
-    ajax('GET', `/threads/ok.${threadId}/page-${pageNo}`, (xhr) =>
+    ajax('GET', `/t/ok.${threadId}/page-${pageNo}`, (xhr) =>
       callback(parser.parseFromString(xhr.responseText, 'text/html'))
-    );
+    )
   }
 
   function ajax(method: string, url: string, callback: (x: XMLHttpRequest) => void) {
-    const xhr = new XMLHttpRequest();
-    xhr.open(method, url);
-    xhr.send(null);
+    const xhr = new XMLHttpRequest()
+    xhr.open(method, url)
+    xhr.send(null)
     xhr.onreadystatechange = function () {
-      const DONE = 4; // readyState 4 means the request is done.
-      const OK = 200; // status 200 is a successful return.
+      const DONE = 4 // readyState 4 means the request is done.
+      const OK = 200 // status 200 is a successful return.
       if (xhr.readyState === DONE) {
         if (xhr.status === OK) {
-          callback(xhr);
+          callback(xhr)
         } else {
-          console.log(`Error: ${xhr.status}`); // An error occurred during the request.
+          console.log(`Error: ${xhr.status}`) // An error occurred during the request.
         }
       }
-    };
+    }
   }
 
   function insertAfter(referenceNode: Element, newNode: Element) {
-    referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling);
+    referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling)
   }
 
   /**
@@ -254,27 +254,27 @@ GM_addStyle(`
    * @author https://stackoverflow.com/a/35385518/1099314
    */
   function htmlToElement(html: string): Node {
-    const template = document.createElement('template');
-    html = html.trim(); // Never return a text node of whitespace as the result
-    template.innerHTML = html;
-    return template.content.firstChild;
+    const template = document.createElement('template')
+    html = html.trim() // Never return a text node of whitespace as the result
+    template.innerHTML = html
+    return template.content.firstChild
   }
-})();
+})()
 
 interface InitialOptions {
-  getThreadId: GetThreadId;
+  getThreadId: GetThreadId
 }
 
 interface GetThreadId {
-  (): string;
+  (): string
 }
 
 declare global {
   let XF: {
-    activate(a: HTMLDivElement): void;
-  };
-  function GM_addStyle(s: string): void;
-  function jQuery(s: any): any;
+    activate(a: HTMLDivElement): void
+  }
+  function GM_addStyle(s: string): void
+  function jQuery(s: any): any
 }
 
-export type {};
+export type {}
