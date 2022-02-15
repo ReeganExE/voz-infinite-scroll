@@ -112,7 +112,9 @@ GM_addStyle(`
         })
         document.body.appendChild(replyButton)
 
-        jQuery(document).on('xf-click:before-click.XFQuoteClick', showReplyForm)
+        setTimeout(() => {
+          jQuery(document).on('xf-click:before-click.XFQuoteClick', showReplyForm);
+        }, 1000)
       }
     }
 
